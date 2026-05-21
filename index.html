@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mood Melody — Feel the Music That Understands You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ===== CSS VARIABLES & RESET ===== */
+:root {
+  --bg: #080810;
+  --bg2: #0f0f1e;
+  --bg3: #13132a;
+  --card: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.09);
+  --text: #f0f0ff;
+  --text2: #9999bb;
+  --accent: #7c3aed;
+  --accent2: #06b6d4;
+  --accent3: #f43f5e;
+  --glow: rgba(124,58,237,0.4);
+  --glow2: rgba(6,182,212,0.3);
+  --radius: 16px;
+  --radius-lg: 24px;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+  --nav-h: 68px;
+}
+[data-theme="light"] {
+  --bg: #f4f4fc;
+  --bg2: #eaeaf8;
+  --bg3: #e0e0f4;
+  --card: rgba(255,255,255,0.7);
+  --card-border: rgba(120,100,200,0.18);
+  --text: #12122a;
+  --text2: #5555aa;
+  --glow: rgba(124,58,237,0.15);
+  --glow2: rgba(6,182,212,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background var(--transition),color var(--transition)}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;font-family:var(--font-body)}
+input,textarea{font-family:var(--font-body);outline:none}
+img{display:block;max-width:100%}
+ul{list-style:none}
+ 
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:9px}
+ 
+/* ===== PAGE SYSTEM ===== */
+.page{display:none;min-height:100vh;position:relative}
+.page.active{display:block}
+ 
+/* ===== TOAST ===== */
+#toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{background:var(--bg3);border:1px solid var(--card-border);border-left:3px solid var(--accent);color:var(--text);padding:12px 18px;border-radius:10px;font-size:.875rem;animation:toastIn .3s ease;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.toast.success{border-left-color:#22c55e}
+.toast.error{border-left-color:var(--accent3)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+ 
+/* ===== LOADING ===== */
+#global-loader{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease}
+#global-loader.hidden{opacity:0;pointer-events:none}
+.loader-logo{font-family:var(--font-head);font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.loader-wave{display:flex;gap:5px;align-items:flex-end;height:40px}
+.loader-wave span{width:5px;background:linear-gradient(var(--accent),var(--accent2));border-radius:3px;animation:wave .8s ease-in-out infinite}
+.loader-wave span:nth-child(1){animation-delay:0s;height:20px}
+.loader-wave span:nth-child(2){animation-delay:.1s;height:35px}
+.loader-wave span:nth-child(3){animation-delay:.2s;height:28px}
+.loader-wave span:nth-child(4){animation-delay:.3s;height:40px}
+.loader-wave span:nth-child(5){animation-delay:.4s;height:22px}
+@keyframes wave{0%,100%{transform:scaleY(.5)}50%{transform:scaleY(1)}}
+ 
+/* ===== PARTICLE CANVAS ===== */
+#particle-canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:0;opacity:0.5}
+ 
+/* ===== NAVBAR ===== */
+#navbar{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:500;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--card-border);display:flex;align-items:center;padding:0 28px;gap:20px;transition:background var(--transition)}
+[data-theme="light"] #navbar{background:rgba(244,244,252,0.85)}
+.nav-logo{font-family:var(--font-head);font-size:1.35rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0}
+.nav-logo span{font-size:.7em;opacity:.7}
+.nav-links{display:flex;gap:4px;flex:1;justify-content:center}
+.nav-link{padding:7px 15px;border-radius:8px;font-size:.875rem;color:var(--text2);transition:all var(--transition);font-weight:500}
+.nav-link:hover,.nav-link.active{color:var(--text);background:var(--card)}
+.nav-actions{display:flex;gap:10px;align-items:center}
+#theme-btn{width:38px;height:38px;border-radius:9px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-size:1.1rem;transition:all var(--transition);display:flex;align-items:center;justify-content:center}
+#theme-btn:hover{background:var(--accent);border-color:var(--accent)}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all var(--transition)}
+.nav-avatar:hover{border-color:var(--accent)}
+#hamburger{display:none;width:38px;height:38px;border-radius:9px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-size:1.1rem;align-items:center;justify-content:center}
+.mobile-menu{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--card-border);padding:16px;flex-direction:column;gap:8px;z-index:499}
+.mobile-menu.open{display:flex}
+.mobile-menu .nav-link{width:100%;text-align:center;padding:12px}
+ 
+/* ===== MINI PLAYER ===== */
+#mini-player{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:600;background:rgba(15,15,30,0.95);backdrop-filter:blur(30px);border:1px solid var(--card-border);border-radius:60px;padding:10px 20px;display:flex;align-items:center;gap:14px;min-width:320px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(124,58,237,0.2);transition:all .4s ease}
+#mini-player.hidden{transform:translateX(-50%) translateY(100px);opacity:0;pointer-events:none}
+[data-theme="light"] #mini-player{background:rgba(240,240,250,0.95)}
+.mp-cover{width:40px;height:40px;border-radius:10px;object-fit:cover;background:linear-gradient(135deg,var(--accent),var(--accent2));flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.mp-info{flex:1;min-width:0}
+.mp-title{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-artist{font-size:.72rem;color:var(--text2)}
+.mp-controls{display:flex;gap:8px;align-items:center}
+.mp-btn{width:30px;height:30px;border-radius:50%;background:transparent;color:var(--text2);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all var(--transition)}
+.mp-btn:hover{color:var(--text);background:var(--card)}
+.mp-btn.play{width:36px;height:36px;background:var(--accent);color:#fff;font-size:1rem}
+.mp-btn.play:hover{background:var(--accent2);transform:scale(1.05)}
+.mp-progress{flex:1;height:3px;background:var(--card-border);border-radius:2px;cursor:pointer;position:relative;max-width:80px}
+.mp-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;width:30%;transition:width .5s}
+ 
+/* ===== SECTION COMMONS ===== */
+.section{padding:48px 0;position:relative;z-index:1}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:10px}
+.section-title{font-family:var(--font-head);font-size:1.5rem;font-weight:700}
+.section-more{font-size:.85rem;color:var(--accent2);cursor:pointer;transition:color var(--transition)}
+.section-more:hover{color:var(--accent)}
+ 
+/* ===== CARDS ===== */
+.song-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all var(--transition);position:relative}
+.song-card:hover{transform:translateY(-6px);border-color:rgba(124,58,237,0.4);box-shadow:0 20px 50px rgba(0,0,0,0.3),0 0 0 1px rgba(124,58,237,0.2)}
+.song-card-thumb{width:100%;aspect-ratio:1;background:linear-gradient(135deg,#1a1a3e,#2d1b69);display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;overflow:hidden}
+.song-card-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.song-card-body{padding:14px}
+.song-card-title{font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-card-artist{font-size:.78rem;color:var(--text2);margin-top:3px}
+.song-card-actions{display:flex;gap:8px;margin-top:12px}
+.song-card-btn{flex:1;padding:8px;border-radius:8px;font-size:.78rem;font-weight:600;transition:all var(--transition)}
+.song-card-btn.play{background:var(--accent);color:#fff}
+.song-card-btn.play:hover{background:var(--accent2)}
+.song-card-btn.fav{background:var(--card);border:1px solid var(--card-border);color:var(--text)}
+.song-card-btn.fav:hover{border-color:var(--accent3);color:var(--accent3)}
+.song-card-btn.fav.saved{background:rgba(244,63,94,0.15);border-color:var(--accent3);color:var(--accent3)}
+ 
+/* ===== GRID ===== */
+.songs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px}
+.songs-grid-lg{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+ 
+/* ===== SKELETON ===== */
+.skeleton{background:linear-gradient(90deg,var(--card) 25%,rgba(255,255,255,0.06) 50%,var(--card) 75%);background-size:200% 100%;animation:skeleton-shimmer 1.5s infinite}
+@keyframes skeleton-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton-card{border-radius:var(--radius);overflow:hidden}
+.skeleton-thumb{aspect-ratio:1;width:100%}
+.skeleton-line{height:14px;border-radius:6px;margin-top:8px}
+.skeleton-line.short{width:60%}
+ 
+/* ===== BUTTONS ===== */
+.btn{padding:12px 28px;border-radius:12px;font-weight:600;font-size:.9rem;transition:all var(--transition);display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#6d28d9);color:#fff;box-shadow:0 8px 24px rgba(124,58,237,0.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,58,237,0.45)}
+.btn-secondary{background:var(--card);border:1px solid var(--card-border);color:var(--text)}
+.btn-secondary:hover{border-color:var(--accent);background:rgba(124,58,237,0.1)}
+.btn-ghost{background:transparent;color:var(--text2)}
+.btn-ghost:hover{color:var(--text)}
+ 
+/* ===== FORM ===== */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:.82rem;font-weight:600;color:var(--text2);margin-bottom:7px;letter-spacing:.04em;text-transform:uppercase}
+.form-input{width:100%;padding:12px 16px;background:var(--card);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-size:.9rem;transition:all var(--transition)}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,0.15)}
+.form-input::placeholder{color:var(--text2);opacity:.6}
+textarea.form-input{resize:vertical;min-height:100px}
+ 
+/* ===== CHIPS / TAGS ===== */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:.78rem;font-weight:600;background:var(--card);border:1px solid var(--card-border);color:var(--text2);cursor:pointer;transition:all var(--transition)}
+.chip:hover,.chip.active{background:rgba(124,58,237,0.2);border-color:var(--accent);color:var(--text)}
+.chips-row{display:flex;flex-wrap:wrap;gap:8px}
+ 
+/* ==========================================
+   PAGE 1: LOGIN / SIGNUP
+   ========================================== */
+#page-login{background:var(--bg);display:none}
+#page-login.active{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+.login-art{background:linear-gradient(135deg,#0f0820,#1e0a3c,#0a1a3e);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;position:relative;overflow:hidden}
+.login-art::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(124,58,237,0.25),transparent 60%),radial-gradient(ellipse at 70% 70%,rgba(6,182,212,0.15),transparent 60%)}
+.login-art-logo{font-family:var(--font-head);font-size:2.8rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px;position:relative;z-index:1;text-align:center}
+.login-art-tagline{color:rgba(255,255,255,0.5);font-size:1rem;text-align:center;max-width:320px;line-height:1.6;position:relative;z-index:1}
+.login-art-wave{display:flex;gap:6px;align-items:flex-end;height:60px;position:relative;z-index:1;margin-top:40px}
+.login-art-wave span{width:6px;background:linear-gradient(#a78bfa,#06b6d4);border-radius:3px;animation:wave .8s ease-in-out infinite}
+.login-art-wave span:nth-child(1){height:25px;animation-delay:0s}
+.login-art-wave span:nth-child(2){height:45px;animation-delay:.1s}
+.login-art-wave span:nth-child(3){height:35px;animation-delay:.2s}
+.login-art-wave span:nth-child(4){height:55px;animation-delay:.3s}
+.login-art-wave span:nth-child(5){height:30px;animation-delay:.4s}
+.login-art-wave span:nth-child(6){height:50px;animation-delay:.5s}
+.login-art-wave span:nth-child(7){height:20px;animation-delay:.6s}
+.float-notes{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.float-note{position:absolute;font-size:1.5rem;opacity:.15;animation:floatNote linear infinite}
+@keyframes floatNote{from{transform:translateY(100vh) rotate(0)}to{transform:translateY(-100px) rotate(360deg)}}
+.login-form-side{display:flex;align-items:center;justify-content:center;padding:48px 32px;background:var(--bg)}
+.login-box{width:100%;max-width:400px}
+.login-tabs{display:flex;gap:0;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:4px;margin-bottom:32px}
+.login-tab{flex:1;padding:10px;border-radius:9px;font-size:.9rem;font-weight:600;background:transparent;color:var(--text2);transition:all var(--transition);text-align:center}
+.login-tab.active{background:var(--accent);color:#fff}
+#login-form,#signup-form{display:none}
+#login-form.active,#signup-form.active{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.login-options{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:.83rem}
+.remember-me{display:flex;align-items:center;gap:7px;color:var(--text2);cursor:pointer}
+.remember-me input{accent-color:var(--accent)}
+.forgot-link{color:var(--accent);cursor:pointer;transition:color var(--transition)}
+.forgot-link:hover{color:var(--accent2)}
+.login-divider{text-align:center;position:relative;margin:20px 0;color:var(--text2);font-size:.82rem}
+.login-divider::before,.login-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--card-border)}
+.login-divider::before{left:0}.login-divider::after{right:0}
+.social-btns{display:flex;gap:10px}
+.social-btn{flex:1;padding:11px;border-radius:10px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-size:.85rem;font-weight:600;transition:all var(--transition);display:flex;align-items:center;justify-content:center;gap:7px}
+.social-btn:hover{border-color:var(--accent);background:rgba(124,58,237,0.1)}
+.form-error{color:var(--accent3);font-size:.78rem;margin-top:5px;display:none}
+.form-error.show{display:block;animation:fadeUp .2s ease}
+ 
+/* ==========================================
+   PAGE 2: SPLASH
+   ========================================== */
+#page-splash{background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:24px;text-align:center}
+#page-splash.active{display:flex}
+.splash-logo{font-family:var(--font-head);font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2),#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:splashPop .6s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes splashPop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+.splash-sub{color:var(--text2);font-size:1.1rem;animation:fadeUp .6s ease .3s both}
+.splash-wave{display:flex;gap:7px;align-items:flex-end;height:70px;animation:fadeUp .6s ease .5s both}
+.splash-wave span{width:8px;background:linear-gradient(var(--accent),var(--accent2));border-radius:4px;animation:wave .7s ease-in-out infinite}
+.splash-wave span:nth-child(1){height:30px;animation-delay:0s}
+.splash-wave span:nth-child(2){height:55px;animation-delay:.1s}
+.splash-wave span:nth-child(3){height:40px;animation-delay:.2s}
+.splash-wave span:nth-child(4){height:65px;animation-delay:.3s}
+.splash-wave span:nth-child(5){height:35px;animation-delay:.4s}
+.splash-wave span:nth-child(6){height:60px;animation-delay:.5s}
+.splash-progress{width:200px;height:3px;background:var(--card-border);border-radius:2px;overflow:hidden;animation:fadeUp .4s ease .7s both}
+.splash-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;animation:progressFill 2.5s ease forwards}
+@keyframes progressFill{from{width:0}to{width:100%}}
+ 
+/* ==========================================
+   PAGE 3: HOME
+   ========================================== */
+#page-home{padding-top:var(--nav-h)}
+.hero{padding:80px 0 60px;text-align:center;position:relative;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:999px;padding:6px 16px;font-size:.82rem;color:var(--accent2);font-weight:600;margin-bottom:20px;animation:fadeUp .5s ease}
+.hero h1{font-family:var(--font-head);font-size:clamp(2rem,5vw,3.8rem);font-weight:800;line-height:1.15;margin-bottom:20px;animation:fadeUp .5s ease .1s both}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{color:var(--text2);font-size:1.1rem;max-width:560px;margin:0 auto 36px;line-height:1.6;animation:fadeUp .5s ease .2s both}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s ease .3s both}
+.search-bar{max-width:600px;margin:40px auto 0;position:relative;animation:fadeUp .5s ease .4s both}
+.search-bar input{width:100%;padding:16px 56px 16px 52px;background:var(--card);border:1px solid var(--card-border);border-radius:16px;color:var(--text);font-size:1rem;transition:all var(--transition)}
+.search-bar input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(124,58,237,0.12),0 8px 32px rgba(0,0,0,0.2)}
+.search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:1.2rem;color:var(--text2)}
+.search-bar button{position:absolute;right:12px;top:50%;transform:translateY(-50%);padding:8px 18px;background:var(--accent);color:#fff;border-radius:10px;font-size:.85rem;font-weight:600;transition:all var(--transition)}
+.search-bar button:hover{background:var(--accent2)}
+.search-suggestions{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--bg2);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4);display:none;z-index:100}
+.search-suggestions.open{display:block;animation:fadeUp .2s ease}
+.suggestion-item{padding:12px 18px;cursor:pointer;font-size:.9rem;transition:background var(--transition);display:flex;align-items:center;gap:10px}
+.suggestion-item:hover{background:var(--card)}
+.mood-quick{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.mood-quick-btn{padding:8px 18px;border-radius:999px;background:var(--card);border:1px solid var(--card-border);font-size:.82rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all var(--transition)}
+.mood-quick-btn:hover{background:rgba(124,58,237,0.2);border-color:var(--accent);color:var(--text)}
+ 
+/* ==========================================
+   PAGE 4: MOOD
+   ========================================== */
+#page-mood{padding-top:var(--nav-h)}
+.mood-hero{padding:60px 0 40px;text-align:center;position:relative;z-index:1}
+.mood-hero h2{font-family:var(--font-head);font-size:2.5rem;font-weight:800;margin-bottom:12px}
+.mood-hero p{color:var(--text2);max-width:500px;margin:0 auto 40px;line-height:1.6}
+.moods-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-bottom:40px}
+.mood-card{background:var(--card);border:2px solid var(--card-border);border-radius:var(--radius-lg);padding:28px 16px;text-align:center;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden}
+.mood-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s}
+.mood-card:hover::before,.mood-card.selected::before{opacity:1}
+.mood-card:hover{transform:translateY(-6px)}
+.mood-card.selected{transform:translateY(-6px) scale(1.03)}
+.mood-card[data-mood="happy"]::before{background:radial-gradient(ellipse at center,rgba(250,204,21,0.2),transparent 70%)}
+.mood-card[data-mood="happy"].selected,.mood-card[data-mood="happy"]:hover{border-color:#fbbf24;box-shadow:0 10px 40px rgba(251,191,36,0.25)}
+.mood-card[data-mood="sad"]::before{background:radial-gradient(ellipse at center,rgba(96,165,250,0.2),transparent 70%)}
+.mood-card[data-mood="sad"].selected,.mood-card[data-mood="sad"]:hover{border-color:#60a5fa;box-shadow:0 10px 40px rgba(96,165,250,0.25)}
+.mood-card[data-mood="angry"]::before{background:radial-gradient(ellipse at center,rgba(239,68,68,0.2),transparent 70%)}
+.mood-card[data-mood="angry"].selected,.mood-card[data-mood="angry"]:hover{border-color:#ef4444;box-shadow:0 10px 40px rgba(239,68,68,0.25)}
+.mood-card[data-mood="relaxed"]::before{background:radial-gradient(ellipse at center,rgba(52,211,153,0.2),transparent 70%)}
+.mood-card[data-mood="relaxed"].selected,.mood-card[data-mood="relaxed"]:hover{border-color:#34d399;box-shadow:0 10px 40px rgba(52,211,153,0.25)}
+.mood-card[data-mood="romantic"]::before{background:radial-gradient(ellipse at center,rgba(244,63,94,0.2),transparent 70%)}
+.mood-card[data-mood="romantic"].selected,.mood-card[data-mood="romantic"]:hover{border-color:#f43f5e;box-shadow:0 10px 40px rgba(244,63,94,0.25)}
+.mood-card[data-mood="focused"]::before{background:radial-gradient(ellipse at center,rgba(168,85,247,0.2),transparent 70%)}
+.mood-card[data-mood="focused"].selected,.mood-card[data-mood="focused"]:hover{border-color:#a855f7;box-shadow:0 10px 40px rgba(168,85,247,0.25)}
+.mood-card[data-mood="energetic"]::before{background:radial-gradient(ellipse at center,rgba(251,146,60,0.2),transparent 70%)}
+.mood-card[data-mood="energetic"].selected,.mood-card[data-mood="energetic"]:hover{border-color:#fb923c;box-shadow:0 10px 40px rgba(251,146,60,0.25)}
+.mood-card[data-mood="heartbroken"]::before{background:radial-gradient(ellipse at center,rgba(148,163,184,0.2),transparent 70%)}
+.mood-card[data-mood="heartbroken"].selected,.mood-card[data-mood="heartbroken"]:hover{border-color:#94a3b8;box-shadow:0 10px 40px rgba(148,163,184,0.25)}
+.mood-emoji{font-size:3rem;display:block;margin-bottom:12px;transition:transform .3s}
+.mood-card:hover .mood-emoji,.mood-card.selected .mood-emoji{transform:scale(1.2) rotate(-5deg)}
+.mood-name{font-family:var(--font-head);font-size:1rem;font-weight:700}
+.mood-desc{font-size:.75rem;color:var(--text2);margin-top:4px}
+.mood-controls{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:28px;margin-bottom:32px}
+.mood-controls h3{font-family:var(--font-head);font-size:1.1rem;font-weight:700;margin-bottom:20px}
+.slider-label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--text2);margin-bottom:8px}
+.mood-slider{width:100%;height:6px;border-radius:3px;accent-color:var(--accent);cursor:pointer;appearance:none;background:var(--card-border);outline:none}
+.mood-slider::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 0 3px rgba(124,58,237,.3)}
+.voice-btn{display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--card);border:1px solid var(--card-border);border-radius:12px;color:var(--text);font-size:.9rem;font-weight:600;transition:all var(--transition);margin-top:20px;width:100%;justify-content:center}
+.voice-btn:hover{border-color:var(--accent);background:rgba(124,58,237,0.1)}
+.voice-btn.listening{border-color:#ef4444;background:rgba(239,68,68,0.1);color:#ef4444;animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.mood-text-input{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-size:.9rem;margin-top:12px;resize:none;height:70px;transition:all var(--transition)}
+.mood-text-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.mood-result-banner{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(6,182,212,0.15));border:1px solid rgba(124,58,237,0.3);border-radius:var(--radius-lg);padding:24px;margin-bottom:32px;display:none;animation:fadeUp .4s ease}
+.mood-result-banner.show{display:block}
+.mood-result-banner h3{font-family:var(--font-head);font-size:1.3rem;margin-bottom:8px}
+.mood-result-banner p{color:var(--text2);font-size:.9rem}
+.mood-result-banner .mood-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:rgba(124,58,237,0.2);border:1px solid var(--accent);font-size:.82rem;font-weight:600;margin-bottom:12px}
+ 
+/* ==========================================
+   PAGE 5: PLAYLIST
+   ========================================== */
+#page-playlist{padding-top:var(--nav-h)}
+.playlist-hero{padding:50px 0 30px;position:relative;z-index:1}
+.playlist-hero h2{font-family:var(--font-head);font-size:2rem;font-weight:800;margin-bottom:8px}
+.playlist-hero p{color:var(--text2)}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.playlist-song-row{display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:12px;background:var(--card);border:1px solid var(--card-border);transition:all var(--transition);cursor:pointer}
+.playlist-song-row:hover{border-color:rgba(124,58,237,0.3);background:rgba(124,58,237,0.05);transform:translateX(4px)}
+.song-row-num{width:24px;font-size:.82rem;color:var(--text2);text-align:center;flex-shrink:0}
+.song-row-thumb{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;overflow:hidden;position:relative}
+.song-row-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.song-row-info{flex:1;min-width:0}
+.song-row-title{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-row-artist{font-size:.78rem;color:var(--text2)}
+.song-row-duration{font-size:.8rem;color:var(--text2);flex-shrink:0}
+.song-row-actions{display:flex;gap:8px;flex-shrink:0}
+.icon-btn{width:32px;height:32px;border-radius:8px;background:transparent;color:var(--text2);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all var(--transition)}
+.icon-btn:hover{background:var(--card);color:var(--text)}
+.icon-btn.liked{color:var(--accent3)}
+.songs-list{display:flex;flex-direction:column;gap:8px}
+ 
+/* ==========================================
+   PAGE 6: FAVORITES
+   ========================================== */
+#page-favorites{padding-top:var(--nav-h)}
+.fav-hero{padding:50px 0 30px;position:relative;z-index:1}
+.fav-hero h2{font-family:var(--font-head);font-size:2rem;font-weight:800;margin-bottom:8px}
+.fav-hero p{color:var(--text2)}
+.profile-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:32px;display:flex;align-items:center;gap:24px;margin-bottom:40px;flex-wrap:wrap}
+.profile-avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:700;font-family:var(--font-head);flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;border:3px solid var(--accent)}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.profile-info{flex:1}
+.profile-name-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.profile-name{font-family:var(--font-head);font-size:1.4rem;font-weight:800}
+.edit-name-btn{padding:5px 12px;border-radius:7px;background:var(--card);border:1px solid var(--card-border);font-size:.75rem;font-weight:600;color:var(--text2);transition:all var(--transition)}
+.edit-name-btn:hover{border-color:var(--accent);color:var(--accent)}
+.profile-stats{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px}
+.profile-stat{text-align:center}
+.profile-stat-num{font-family:var(--font-head);font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.profile-stat-label{font-size:.72rem;color:var(--text2)}
+.mood-history{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+.mood-history-item{padding:8px 16px;border-radius:999px;background:var(--card);border:1px solid var(--card-border);font-size:.82rem;display:flex;align-items:center;gap:6px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state .icon{font-size:3rem;margin-bottom:16px}
+.empty-state p{font-size:.9rem}
+.fav-tabs{display:flex;gap:0;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:4px;margin-bottom:28px;max-width:400px}
+.fav-tab{flex:1;padding:9px;border-radius:9px;font-size:.85rem;font-weight:600;background:transparent;color:var(--text2);transition:all var(--transition)}
+.fav-tab.active{background:var(--accent);color:#fff}
+ 
+/* ==========================================
+   PAGE 7: ABOUT
+   ========================================== */
+#page-about{padding-top:var(--nav-h)}
+.about-hero{padding:80px 0;text-align:center;position:relative;z-index:1}
+.about-hero h2{font-family:var(--font-head);font-size:3rem;font-weight:800;margin-bottom:16px}
+.about-hero p{color:var(--text2);max-width:600px;margin:0 auto;font-size:1.05rem;line-height:1.7}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:60px}
+.feature-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:28px;transition:all var(--transition)}
+.feature-card:hover{transform:translateY(-4px);border-color:rgba(124,58,237,0.3)}
+.feature-icon{font-size:2rem;margin-bottom:14px}
+.feature-card h3{font-family:var(--font-head);font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.feature-card p{color:var(--text2);font-size:.87rem;line-height:1.6}
+.tech-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:60px}
+.tech-badge{padding:8px 18px;border-radius:10px;background:var(--card);border:1px solid var(--card-border);font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:7px}
+.faq-list{display:flex;flex-direction:column;gap:12px;margin-bottom:60px}
+.faq-item{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden}
+.faq-q{padding:18px 20px;cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;transition:background var(--transition)}
+.faq-q:hover{background:rgba(124,58,237,0.05)}
+.faq-a{padding:0 20px;max-height:0;overflow:hidden;transition:all .3s ease;color:var(--text2);font-size:.87rem;line-height:1.6}
+.faq-a.open{padding:12px 20px 18px;max-height:200px}
+.faq-arrow{transition:transform .3s;color:var(--text2)}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:60px}
+.contact-info h3{font-family:var(--font-head);font-size:1.5rem;font-weight:700;margin-bottom:16px}
+.contact-info p{color:var(--text2);font-size:.9rem;line-height:1.7;margin-bottom:20px}
+.social-links{display:flex;gap:12px;flex-wrap:wrap}
+.social-link{width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all var(--transition)}
+.social-link:hover{background:var(--accent);border-color:var(--accent);transform:translateY(-3px)}
+ 
+/* ===== BACKGROUND MOOD OVERLAY ===== */
+#mood-bg-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1s ease}
+ 
+/* ===== EDIT NAME MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:800;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:32px;max-width:400px;width:90%;animation:fadeUp .3s ease}
+.modal h3{font-family:var(--font-head);font-size:1.3rem;font-weight:700;margin-bottom:20px}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+ 
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  #page-login.active{grid-template-columns:1fr}
+  .login-art{display:none}
+  .contact-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  #hamburger{display:flex}
+  .hero h1{font-size:2rem}
+  .moods-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .splash-logo{font-size:2.5rem}
+  .about-hero h2{font-size:2rem}
+  .songs-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .profile-card{flex-direction:column;text-align:center}
+}
+@media(max-width:480px){
+  .container{padding:0 16px}
+  .moods-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-actions{flex-direction:column;align-items:center}
+  .nav-actions .nav-link{display:none}
+}
+ 
+/* ===== MISC ===== */
+.hidden{display:none!important}
+.gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.divider{height:1px;background:var(--card-border);margin:40px 0}
+.label-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:.72rem;font-weight:700;background:rgba(124,58,237,0.2);color:var(--accent);border:1px solid rgba(124,58,237,0.3)}
+.play-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;font-size:1.8rem}
+.song-card:hover .play-overlay{display:flex}
+.section-note{font-size:.82rem;color:var(--text2);margin-top:-16px;margin-bottom:20px;padding:10px 14px;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);border-radius:8px;line-height:1.5}
+</style>
+</head>
+<body>
+ 
+<!-- ===== GLOBAL LOADER ===== -->
+<div id="global-loader">
+  <div class="loader-logo">🎵 Mood Melody</div>
+  <div class="loader-wave">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+</div>
+ 
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container"></div>
+ 
+<!-- ===== PARTICLES CANVAS ===== -->
+<canvas id="particle-canvas"></canvas>
+ 
+<!-- ===== MOOD BACKGROUND OVERLAY ===== -->
+<div id="mood-bg-overlay"></div>
+ 
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar" class="hidden">
+  <div class="nav-logo">🎵 Mood<span>Melody</span></div>
+  <div class="nav-links">
+    <a class="nav-link" data-page="home">Home</a>
+    <a class="nav-link" data-page="mood">Detect Mood</a>
+    <a class="nav-link" data-page="playlist">Playlist</a>
+    <a class="nav-link" data-page="favorites">Favorites</a>
+    <a class="nav-link" data-page="about">About</a>
+  </div>
+  <div class="nav-actions">
+    <button id="theme-btn" title="Toggle theme">🌙</button>
+    <div class="nav-avatar" id="nav-avatar">U</div>
+    <button id="hamburger" onclick="toggleMobileMenu()">☰</button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a class="nav-link" data-page="home">Home</a>
+  <a class="nav-link" data-page="mood">Detect Mood</a>
+  <a class="nav-link" data-page="playlist">Playlist</a>
+  <a class="nav-link" data-page="favorites">Favorites</a>
+  <a class="nav-link" data-page="about">About</a>
+</div>
+ 
+<!-- ===== MINI PLAYER ===== -->
+<div id="mini-player" class="hidden">
+  <div class="mp-cover" id="mp-cover">🎵</div>
+  <div class="mp-info">
+    <div class="mp-title" id="mp-title">No song playing</div>
+    <div class="mp-artist" id="mp-artist">—</div>
+  </div>
+  <div class="mp-progress" id="mp-progress-bar">
+    <div class="mp-progress-fill" id="mp-progress-fill"></div>
+  </div>
+  <div class="mp-controls">
+    <button class="mp-btn" onclick="prevSong()" title="Previous">⏮</button>
+    <button class="mp-btn play" id="mp-play-btn" onclick="togglePlay()">▶</button>
+    <button class="mp-btn" onclick="nextSong()" title="Next">⏭</button>
+    <button class="mp-btn" onclick="closePlayer()" title="Close">✕</button>
+  </div>
+</div>
+ 
+<!-- ===== EDIT NAME MODAL ===== -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>Edit Profile</h3>
+    <div class="form-group">
+      <label class="form-label">Display Name</label>
+      <input type="text" class="form-input" id="edit-name-input" placeholder="Your name"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Profile Picture URL</label>
+      <input type="url" class="form-input" id="edit-pic-input" placeholder="https://..."/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveProfile()">Save</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===============================
+     PAGE 1: LOGIN
+     =============================== -->
+<div id="page-login" class="page active">
+  <div class="login-art">
+    <div class="float-notes" id="float-notes"></div>
+    <div class="login-art-logo">🎵 Mood Melody</div>
+    <p class="login-art-tagline">Discover music that resonates with your soul's current frequency</p>
+    <div class="login-art-wave">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+  <div class="login-form-side">
+    <div class="login-box">
+      <div class="login-tabs">
+        <button class="login-tab active" onclick="switchLoginTab('login')">Sign In</button>
+        <button class="login-tab" onclick="switchLoginTab('signup')">Sign Up</button>
+      </div>
+ 
+      <!-- LOGIN FORM -->
+      <div id="login-form" class="active">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="login-email" placeholder="you@example.com"/>
+          <div class="form-error" id="login-email-err">Please enter a valid email</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="login-pass" placeholder="••••••••"/>
+          <div class="form-error" id="login-pass-err">Password must be at least 6 characters</div>
+        </div>
+        <div class="login-options">
+          <label class="remember-me"><input type="checkbox" id="remember-me"/> Remember me</label>
+          <span class="forgot-link" onclick="showForgot()">Forgot password?</span>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:16px" onclick="handleLogin()">Sign In 🎵</button>
+        <div class="login-divider">or continue with</div>
+        <div class="social-btns" style="margin-top:12px">
+          <button class="social-btn" onclick="socialLogin('Google')">🌐 Google</button>
+          <button class="social-btn" onclick="socialLogin('GitHub')">💻 GitHub</button>
+        </div>
+      </div>
+ 
+      <!-- SIGNUP FORM -->
+      <div id="signup-form">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="signup-name" placeholder="Your name"/>
+          <div class="form-error" id="signup-name-err">Name is required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="signup-email" placeholder="you@example.com"/>
+          <div class="form-error" id="signup-email-err">Please enter a valid email</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="signup-pass" placeholder="Min 6 characters"/>
+          <div class="form-error" id="signup-pass-err">Password must be at least 6 characters</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-input" id="signup-pass2" placeholder="Repeat password"/>
+          <div class="form-error" id="signup-pass2-err">Passwords do not match</div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="handleSignup()">Create Account 🚀</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===============================
+     PAGE 2: SPLASH
+     =============================== -->
+<div id="page-splash" class="page">
+  <div class="splash-logo" id="splash-username-text">Welcome to Mood Melody</div>
+  <p class="splash-sub">Your personal music mood guide is ready ✨</p>
+  <div class="splash-wave">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="splash-progress"><div class="splash-progress-fill"></div></div>
+</div>
+ 
+<!-- ===============================
+     PAGE 3: HOME
+     =============================== -->
+<div id="page-home" class="page">
+  <section class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">🎵 AI-Powered Music Discovery</div>
+      <h1>Feel the Music That<br/><span>Understands You</span></h1>
+      <p class="hero-sub">Mood Melody analyzes your emotions and curates the perfect soundtrack for every moment of your life.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="navigateTo('mood')">Detect My Mood 🎭</button>
+        <button class="btn btn-secondary" onclick="navigateTo('playlist')">Browse Playlists</button>
+      </div>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search songs, artists, albums..." oninput="handleSearch(this.value)" onkeydown="searchKeydown(event)"/>
+        <button onclick="doSearch()">Search</button>
+        <div class="search-suggestions" id="search-suggestions"></div>
+      </div>
+      <div class="mood-quick" style="margin-top:20px">
+        <button class="mood-quick-btn" onclick="quickMood('happy')">😊 Happy</button>
+        <button class="mood-quick-btn" onclick="quickMood('sad')">😢 Sad</button>
+        <button class="mood-quick-btn" onclick="quickMood('energetic')">⚡ Energetic</button>
+        <button class="mood-quick-btn" onclick="quickMood('relaxed')">😌 Relaxed</button>
+        <button class="mood-quick-btn" onclick="quickMood('romantic')">❤️ Romantic</button>
+      </div>
+    </div>
+  </section>
+ 
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">🔥 Trending Now</h2>
+        <span class="section-more" onclick="navigateTo('playlist')">See all →</span>
+      </div>
+      <div class="section-note">🎵 Music data powered by Last.fm API. Play buttons launch Deezer previews where available.</div>
+      <div class="songs-grid" id="trending-grid">
+        <!-- Skeleton loaders -->
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+      </div>
+    </div>
+  </section>
+ 
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">✨ Recommended For You</h2>
+        <span class="section-more" onclick="navigateTo('mood')">Change mood →</span>
+      </div>
+      <div class="songs-grid" id="recommended-grid">
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+        <div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>
+      </div>
+    </div>
+  </section>
+ 
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">🕐 Recent Mood History</h2>
+      </div>
+      <div class="chips-row" id="recent-moods-row">
+        <span class="chip">No moods detected yet</span>
+      </div>
+    </div>
+  </section>
+</div>
+ 
+<!-- ===============================
+     PAGE 4: MOOD DETECTION
+     =============================== -->
+<div id="page-mood" class="page">
+  <section class="mood-hero">
+    <div class="container">
+      <h2>How Are You <span class="gradient-text">Feeling?</span></h2>
+      <p>Select your mood, adjust the intensity, or just speak — Mood Melody will find the perfect songs for your current state of mind.</p>
+      <div class="moods-grid" id="moods-grid">
+        <div class="mood-card" data-mood="happy" onclick="selectMood('happy')">
+          <span class="mood-emoji">😊</span>
+          <div class="mood-name">Happy</div>
+          <div class="mood-desc">Joyful vibes</div>
+        </div>
+        <div class="mood-card" data-mood="sad" onclick="selectMood('sad')">
+          <span class="mood-emoji">😢</span>
+          <div class="mood-name">Sad</div>
+          <div class="mood-desc">Emotional tones</div>
+        </div>
+        <div class="mood-card" data-mood="angry" onclick="selectMood('angry')">
+          <span class="mood-emoji">😡</span>
+          <div class="mood-name">Angry</div>
+          <div class="mood-desc">Release tension</div>
+        </div>
+        <div class="mood-card" data-mood="relaxed" onclick="selectMood('relaxed')">
+          <span class="mood-emoji">😌</span>
+          <div class="mood-name">Relaxed</div>
+          <div class="mood-desc">Chill & unwind</div>
+        </div>
+        <div class="mood-card" data-mood="romantic" onclick="selectMood('romantic')">
+          <span class="mood-emoji">❤️</span>
+          <div class="mood-name">Romantic</div>
+          <div class="mood-desc">Love songs</div>
+        </div>
+        <div class="mood-card" data-mood="focused" onclick="selectMood('focused')">
+          <span class="mood-emoji">🎯</span>
+          <div class="mood-name">Focused</div>
+          <div class="mood-desc">Deep work</div>
+        </div>
+        <div class="mood-card" data-mood="energetic" onclick="selectMood('energetic')">
+          <span class="mood-emoji">⚡</span>
+          <div class="mood-name">Energetic</div>
+          <div class="mood-desc">High energy</div>
+        </div>
+        <div class="mood-card" data-mood="heartbroken" onclick="selectMood('heartbroken')">
+          <span class="mood-emoji">💔</span>
+          <div class="mood-name">Heartbroken</div>
+          <div class="mood-desc">Healing music</div>
+        </div>
+      </div>
+ 
+      <div class="mood-controls">
+        <h3>🎚️ Fine-Tune Your Mood</h3>
+        <div class="slider-label">
+          <span>Intensity</span>
+          <span id="intensity-val">50%</span>
+        </div>
+        <input type="range" min="0" max="100" value="50" class="mood-slider" id="intensity-slider" oninput="document.getElementById('intensity-val').textContent=this.value+'%'"/>
+ 
+        <button class="voice-btn" id="voice-btn" onclick="startVoiceRecognition()">
+          🎤 <span id="voice-btn-text">Speak Your Mood</span>
+        </button>
+        <div id="voice-result" style="font-size:.82rem;color:var(--accent2);margin-top:8px;min-height:18px"></div>
+ 
+        <textarea class="mood-text-input" id="mood-text-input" placeholder="Or type how you feel... e.g. 'I feel a bit melancholic today'"></textarea>
+        <button class="btn btn-primary" style="margin-top:12px" onclick="analyzeMoodText()">Analyze Text 🔍</button>
+      </div>
+ 
+      <div class="mood-result-banner" id="mood-result-banner">
+        <div class="mood-badge" id="mood-badge">😊 Happy</div>
+        <h3 id="mood-banner-title">Perfect picks for a joyful day</h3>
+        <p id="mood-banner-desc">We've curated the best happy songs just for you.</p>
+      </div>
+ 
+      <div id="mood-songs-section" style="display:none">
+        <div class="section-head">
+          <h2 class="section-title" id="mood-songs-title">🎵 Songs for Your Mood</h2>
+        </div>
+        <div class="songs-grid" id="mood-songs-grid"></div>
+      </div>
+    </div>
+  </section>
+</div>
+ 
+<!-- ===============================
+     PAGE 5: PLAYLIST
+     =============================== -->
+<div id="page-playlist" class="page">
+  <section class="playlist-hero">
+    <div class="container">
+      <h2 class="gradient-text">All Playlists</h2>
+      <p>Browse and filter songs across all moods and genres</p>
+      <div class="filter-bar" style="margin-top:24px">
+        <button class="chip active" onclick="filterPlaylist('all',this)">All</button>
+        <button class="chip" onclick="filterPlaylist('happy',this)">😊 Happy</button>
+        <button class="chip" onclick="filterPlaylist('sad',this)">😢 Sad</button>
+        <button class="chip" onclick="filterPlaylist('energetic',this)">⚡ Energetic</button>
+        <button class="chip" onclick="filterPlaylist('relaxed',this)">😌 Relaxed</button>
+        <button class="chip" onclick="filterPlaylist('romantic',this)">❤️ Romantic</button>
+        <button class="chip" onclick="filterPlaylist('focused',this)">🎯 Focused</button>
+        <button class="chip" onclick="filterPlaylist('angry',this)">😡 Angry</button>
+        <button class="chip" onclick="filterPlaylist('heartbroken',this)">💔 Heartbroken</button>
+      </div>
+      <div class="section-note" style="margin-top:16px">🎵 Songs fetched from Last.fm API. Click play to launch Deezer search for that track.</div>
+    </div>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="songs-list" id="playlist-songs-list">
+        <!-- Songs loaded dynamically -->
+      </div>
+    </div>
+  </section>
+</div>
+ 
+<!-- ===============================
+     PAGE 6: FAVORITES
+     =============================== -->
+<div id="page-favorites" class="page">
+  <section class="fav-hero">
+    <div class="container">
+      <h2>Your <span class="gradient-text">Music World</span></h2>
+      <p>All your saved songs, mood history, and profile in one place</p>
+ 
+      <div class="profile-card" style="margin-top:32px">
+        <div class="profile-avatar" id="profile-avatar" onclick="openModal()">U</div>
+        <div class="profile-info">
+          <div class="profile-name-row">
+            <div class="profile-name" id="profile-name">Music Lover</div>
+            <button class="edit-name-btn" onclick="openModal()">✏️ Edit Profile</button>
+          </div>
+          <div style="color:var(--text2);font-size:.85rem" id="profile-email-disp">user@example.com</div>
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="profile-stat-num" id="stat-fav">0</div>
+              <div class="profile-stat-label">Favorites</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-num" id="stat-moods">0</div>
+              <div class="profile-stat-label">Moods Tried</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-num" id="stat-played">0</div>
+              <div class="profile-stat-label">Songs Played</div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="section-head" style="margin-bottom:16px">
+        <h2 class="section-title">🎭 Mood History</h2>
+      </div>
+      <div class="mood-history" id="mood-history-row">
+        <span style="color:var(--text2);font-size:.85rem">No moods detected yet. Go to Detect Mood to get started!</span>
+      </div>
+    </div>
+  </section>
+ 
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="fav-tabs">
+        <button class="fav-tab active" onclick="switchFavTab('songs',this)">❤️ Songs</button>
+        <button class="fav-tab" onclick="switchFavTab('recent',this)">🕐 Recent</button>
+      </div>
+      <div id="fav-songs-panel">
+        <div class="songs-grid songs-grid-lg" id="fav-songs-grid">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+      <div id="fav-recent-panel" style="display:none">
+        <div class="songs-list" id="recent-songs-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+ 
+<!-- ===============================
+     PAGE 7: ABOUT
+     =============================== -->
+<div id="page-about" class="page">
+  <section class="about-hero">
+    <div class="container">
+      <div class="hero-eyebrow" style="margin:0 auto 20px">🎵 About This Project</div>
+      <h2>Why <span class="gradient-text">Mood Melody?</span></h2>
+      <p>Music is deeply tied to emotions. Mood Melody bridges the gap between how you feel and what you listen to — creating an intelligent, personal, and immersive music discovery experience.</p>
+    </div>
+  </section>
+ 
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="section-head"><h2 class="section-title">✨ Key Features</h2></div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎭</div>
+          <h3>8-Mood Detection System</h3>
+          <p>Detect Happy, Sad, Angry, Relaxed, Romantic, Focused, Energetic, and Heartbroken states through clicks, voice, or text input.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎤</div>
+          <h3>Voice Recognition</h3>
+          <p>Speak naturally and our Web Speech API integration automatically detects your mood from conversational phrases.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h3>Real-Time API Music</h3>
+          <p>Songs are fetched live from Last.fm and Deezer APIs, ensuring up-to-date and relevant recommendations.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💾</div>
+          <h3>Persistent Favorites</h3>
+          <p>Save songs to your local favorites that persist across sessions using localStorage — no backend required.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌓</div>
+          <h3>Dark / Light Mode</h3>
+          <p>Seamlessly toggle between a premium dark and a clean light theme. Your preference is saved automatically.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Fully Responsive</h3>
+          <p>Works beautifully on mobile, tablet, and desktop with a fluid, adaptive layout.</p>
+        </div>
+      </div>
+ 
+      <div class="divider"></div>
+ 
+      <div class="section-head"><h2 class="section-title">🛠️ Technologies Used</h2></div>
+      <div class="tech-grid">
+        <div class="tech-badge">🌐 HTML5</div>
+        <div class="tech-badge">🎨 CSS3 + Glassmorphism</div>
+        <div class="tech-badge">⚡ Vanilla JavaScript</div>
+        <div class="tech-badge">🎵 Last.fm API</div>
+        <div class="tech-badge">🎧 Deezer API</div>
+        <div class="tech-badge">🎤 Web Speech API</div>
+        <div class="tech-badge">💾 localStorage</div>
+        <div class="tech-badge">📱 Responsive Design</div>
+        <div class="tech-badge">✨ CSS Animations</div>
+        <div class="tech-badge">🎵 Canvas Particles</div>
+      </div>
+ 
+      <div class="divider"></div>
+ 
+      <div class="section-head"><h2 class="section-title">❓ FAQ</h2></div>
+      <div class="faq-list">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">How does mood detection work? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">You can select a mood from 8 options, use voice recognition to speak naturally (e.g., "I feel happy today"), or type your feelings in the text box. The system maps keywords to moods and fetches music accordingly.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Are the songs real? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">Yes! Songs are fetched live from the Last.fm API using mood-based tags. Play buttons redirect to Deezer for actual audio playback. A Last.fm API key is embedded for demo purposes.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Is my data stored online? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">No. All your favorites, mood history, and profile data is stored locally in your browser using localStorage. Nothing is sent to any server.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Does voice recognition require permissions? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">Yes, your browser will ask for microphone access when you click "Speak Your Mood." This uses the browser's built-in Web Speech API and requires HTTPS or localhost.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">What are the future improvements? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">Planned features include: Spotify OAuth integration, facial expression mood detection via webcam, social sharing, collaborative playlists, and a backend for cross-device sync.</div>
+        </div>
+      </div>
+ 
+      <div class="divider"></div>
+ 
+      <div class="section-head"><h2 class="section-title">📬 Contact & Feedback</h2></div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h3>Get in Touch</h3>
+          <p>Have feedback about Mood Melody? Found a bug or have a feature suggestion? We'd love to hear from you. This project is open to contributions and improvements.</p>
+          <div class="social-links">
+            <a class="social-link" title="GitHub" href="https://github.com" target="_blank">💻</a>
+            <a class="social-link" title="Twitter/X" href="#" target="_blank">🐦</a>
+            <a class="social-link" title="Instagram" href="#" target="_blank">📸</a>
+            <a class="social-link" title="LinkedIn" href="#" target="_blank">💼</a>
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="contact-name" placeholder="Your name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="contact-email" placeholder="you@example.com"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-input" id="contact-msg" placeholder="Your feedback or message..."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="submitContact()">Send Message 📨</button>
+        </div>
+      </div>
+ 
+      <div style="text-align:center;padding:40px 0;color:var(--text2);font-size:.85rem">
+        <div style="font-family:var(--font-head);font-size:1.2rem;font-weight:800;margin-bottom:8px" class="gradient-text">🎵 Mood Melody</div>
+        Built with ❤️ using HTML, CSS & Vanilla JS · APIs: Last.fm, Deezer, Web Speech
+      </div>
+    </div>
+  </section>
+</div>
+ 
+<script>
+/* =============================================
+   MOOD MELODY — CORE JAVASCRIPT
+   ============================================= */
+ 
+// ===== STATE & CONSTANTS =====
+const LASTFM_KEY = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4'; // Demo key — replace with real one from last.fm/api
+const DEEZER_BASE = 'https://api.deezer.com'; // Note: requires CORS proxy in production
+ 
+const MOOD_CONFIG = {
+  happy:       { emoji:'😊', color:'#fbbf24', bg:'rgba(251,191,36,0.08)',  tags:['happy','pop','feel good','upbeat'],       msg:'Perfect songs for a joyful day',    desc:'Upbeat tracks to keep your smile going!' },
+  sad:         { emoji:'😢', color:'#60a5fa', bg:'rgba(96,165,250,0.08)',  tags:['sad','melancholy','emotional','blues'],   msg:'Songs that understand your heart',  desc:'Let the music hold space for your feelings.' },
+  angry:       { emoji:'😡', color:'#ef4444', bg:'rgba(239,68,68,0.08)',   tags:['metal','rock','aggressive','hardcore'],   msg:'Channel that energy into music',    desc:'Heavy beats to release and transform your anger.' },
+  relaxed:     { emoji:'😌', color:'#34d399', bg:'rgba(52,211,153,0.08)',  tags:['chill','ambient','lofi','calm'],          msg:'Perfect songs for a calm evening',  desc:'Gentle soundscapes to ease your mind.' },
+  romantic:    { emoji:'❤️', color:'#f43f5e', bg:'rgba(244,63,94,0.08)',   tags:['love','romantic','soul','r&b'],           msg:'Music made for love',               desc:'Beautiful melodies for tender moments.' },
+  focused:     { emoji:'🎯', color:'#a855f7', bg:'rgba(168,85,247,0.08)',  tags:['focus','study','instrumental','classical'],msg:'Deep work, deep music',             desc:'Concentration-enhancing soundscapes.' },
+  energetic:   { emoji:'⚡', color:'#fb923c', bg:'rgba(251,146,60,0.08)',  tags:['dance','edm','electronic','workout'],     msg:'Fuel your energy with music',       desc:'High-octane tracks to power your momentum.' },
+  heartbroken: { emoji:'💔', color:'#94a3b8', bg:'rgba(148,163,184,0.08)', tags:['heartbreak','breakup','indie','emo'],     msg:'Healing through music',             desc:'Songs that understand what words cannot.' }
+};
+ 
+// Fallback song data (used when APIs are unavailable / CORS blocked)
+const FALLBACK_SONGS = {
+  happy: [
+    {id:1,title:'Happy',artist:'Pharrell Williams',emoji:'😊',duration:'3:53',tags:['happy']},
+    {id:2,title:'Can\'t Stop the Feeling',artist:'Justin Timberlake',emoji:'🎉',duration:'3:56',tags:['happy']},
+    {id:3,title:'Good as Hell',artist:'Lizzo',emoji:'😊',duration:'2:38',tags:['happy']},
+    {id:4,title:'Shake It Off',artist:'Taylor Swift',emoji:'🎵',duration:'3:39',tags:['happy']},
+    {id:5,title:'Uptown Funk',artist:'Mark Ronson ft. Bruno Mars',emoji:'🕺',duration:'4:30',tags:['happy']},
+    {id:6,title:'Dancing Queen',artist:'ABBA',emoji:'👑',duration:'3:51',tags:['happy']},
+  ],
+  sad: [
+    {id:7,title:'Someone Like You',artist:'Adele',emoji:'😢',duration:'4:45',tags:['sad']},
+    {id:8,title:'The Night We Met',artist:'Lord Huron',emoji:'🌙',duration:'3:28',tags:['sad']},
+    {id:9,title:'Skinny Love',artist:'Bon Iver',emoji:'💧',duration:'3:58',tags:['sad']},
+    {id:10,title:'Crying in the Club',artist:'Camila Cabello',emoji:'😭',duration:'3:31',tags:['sad']},
+    {id:11,title:'Fix You',artist:'Coldplay',emoji:'🌧️',duration:'4:55',tags:['sad']},
+    {id:12,title:'Mad World',artist:'Gary Jules',emoji:'🎭',duration:'3:08',tags:['sad']},
+  ],
+  angry: [
+    {id:13,title:'Break Stuff',artist:'Limp Bizkit',emoji:'😡',duration:'2:47',tags:['angry']},
+    {id:14,title:'Killing in the Name',artist:'Rage Against the Machine',emoji:'🔥',duration:'5:13',tags:['angry']},
+    {id:15,title:'Given Up',artist:'Linkin Park',emoji:'⚡',duration:'3:09',tags:['angry']},
+    {id:16,title:'Down with the Sickness',artist:'Disturbed',emoji:'💢',duration:'4:37',tags:['angry']},
+  ],
+  relaxed: [
+    {id:17,title:'Sunset Lover',artist:'Petit Biscuit',emoji:'🌅',duration:'4:08',tags:['relaxed']},
+    {id:18,title:'Coffee',artist:'beabadoobee',emoji:'☕',duration:'1:56',tags:['relaxed']},
+    {id:19,title:'Sunday Morning',artist:'Maroon 5',emoji:'☀️',duration:'4:05',tags:['relaxed']},
+    {id:20,title:'Electric Feel',artist:'MGMT',emoji:'🌿',duration:'3:49',tags:['relaxed']},
+    {id:21,title:'Banana Pancakes',artist:'Jack Johnson',emoji:'🍌',duration:'3:10',tags:['relaxed']},
+    {id:22,title:'Better Together',artist:'Jack Johnson',emoji:'🌊',duration:'3:29',tags:['relaxed']},
+  ],
+  romantic: [
+    {id:23,title:'All of Me',artist:'John Legend',emoji:'❤️',duration:'4:29',tags:['romantic']},
+    {id:24,title:'Thinking Out Loud',artist:'Ed Sheeran',emoji:'💕',duration:'4:41',tags:['romantic']},
+    {id:25,title:'Perfect',artist:'Ed Sheeran',emoji:'💑',duration:'4:23',tags:['romantic']},
+    {id:26,title:'A Thousand Years',artist:'Christina Perri',emoji:'🕰️',duration:'4:46',tags:['romantic']},
+  ],
+  focused: [
+    {id:27,title:'Experience',artist:'Ludovico Einaudi',emoji:'🎹',duration:'5:14',tags:['focused']},
+    {id:28,title:'Comptine d\'un autre été',artist:'Yann Tiersen',emoji:'🎭',duration:'2:21',tags:['focused']},
+    {id:29,title:'Nuvole Bianche',artist:'Ludovico Einaudi',emoji:'☁️',duration:'5:55',tags:['focused']},
+    {id:30,title:'River Flows in You',artist:'Yiruma',emoji:'🌊',duration:'3:24',tags:['focused']},
+  ],
+  energetic: [
+    {id:31,title:'Levels',artist:'Avicii',emoji:'⚡',duration:'5:37',tags:['energetic']},
+    {id:32,title:'Titanium',artist:'David Guetta ft. Sia',emoji:'💪',duration:'4:05',tags:['energetic']},
+    {id:33,title:'Wake Me Up',artist:'Avicii',emoji:'🌅',duration:'4:06',tags:['energetic']},
+    {id:34,title:'Clarity',artist:'Zedd ft. Foxes',emoji:'✨',duration:'4:00',tags:['energetic']},
+    {id:35,title:'Animals',artist:'Martin Garrix',emoji:'🦁',duration:'3:42',tags:['energetic']},
+    {id:36,title:'Lean On',artist:'Major Lazer & DJ Snake',emoji:'🎶',duration:'2:58',tags:['energetic']},
+  ],
+  heartbroken: [
+    {id:37,title:'Happier',artist:'Olivia Rodrigo',emoji:'💔',duration:'3:04',tags:['heartbroken']},
+    {id:38,title:'Drivers License',artist:'Olivia Rodrigo',emoji:'🚗',duration:'4:02',tags:['heartbroken']},
+    {id:39,title:'When the Party\'s Over',artist:'Billie Eilish',emoji:'🎈',duration:'3:16',tags:['heartbroken']},
+    {id:40,title:'Back to December',artist:'Taylor Swift',emoji:'❄️',duration:'4:53',tags:['heartbroken']},
+  ]
+};
+ 
+// App state
+let state = {
+  currentPage: 'login',
+  currentMood: null,
+  isPlaying: false,
+  currentSong: null,
+  currentSongIndex: 0,
+  currentPlaylist: [],
+  favorites: JSON.parse(localStorage.getItem('mm_favorites') || '[]'),
+  moodHistory: JSON.parse(localStorage.getItem('mm_moodHistory') || '[]'),
+  recentSongs: JSON.parse(localStorage.getItem('mm_recentSongs') || '[]'),
+  user: JSON.parse(localStorage.getItem('mm_user') || 'null'),
+  theme: localStorage.getItem('mm_theme') || 'dark',
+  playCount: parseInt(localStorage.getItem('mm_playCount') || '0'),
+  allSongs: [],
+  filteredSongs: [],
+  progressInterval: null,
+  progressVal: 0
+};
+ 
+// Flatten all fallback songs into one array
+state.allSongs = Object.values(FALLBACK_SONGS).flat();
+ 
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(state.theme);
+  initParticles();
+  initFloatingNotes();
+  setupNavListeners();
+  
+  setTimeout(() => {
+    document.getElementById('global-loader').classList.add('hidden');
+    if (state.user) {
+      showSplash(state.user.name || 'Music Lover');
+    }
+  }, 1600);
+});
+ 
+// ===== THEME =====
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem('mm_theme', t);
+  state.theme = t;
+}
+document.getElementById('theme-btn').addEventListener('click', () => {
+  applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+});
+ 
+// ===== NAVIGATION =====
+function navigateTo(page, updateNav = true) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) {
+    target.classList.add('active');
+    state.currentPage = page;
+    window.scrollTo({top:0, behavior:'smooth'});
+    
+    if (updateNav) {
+      document.querySelectorAll('.nav-link').forEach(l => {
+        l.classList.toggle('active', l.dataset.page === page);
+      });
+    }
+    
+    // Page-specific init
+    if (page === 'home') initHomePage();
+    if (page === 'mood') initMoodPage();
+    if (page === 'playlist') initPlaylistPage();
+    if (page === 'favorites') initFavoritesPage();
+    
+    // Show/hide navbar
+    const noNav = ['login','splash'];
+    document.getElementById('navbar').classList.toggle('hidden', noNav.includes(page));
+    
+    // Close mobile menu
+    document.getElementById('mobile-menu').classList.remove('open');
+  }
+}
+ 
+function setupNavListeners() {
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', () => navigateTo(el.dataset.page));
+  });
+}
+ 
+function toggleMobileMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+ 
+// ===== TOAST =====
+function showToast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(40px)';
+    t.style.transition = 'all .3s';
+    setTimeout(() => t.remove(), 300);
+  }, 3000);
+}
+ 
+// ===== PARTICLES =====
+function initParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.4;
+      this.speedY = (Math.random() - 0.5) * 0.4;
+      this.opacity = Math.random() * 0.5 + 0.1;
+      this.color = Math.random() > 0.5 ? '#7c3aed' : '#06b6d4';
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.opacity;
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+  
+  for(let i = 0; i < 80; i++) particles.push(new Particle());
+  
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+ 
+function initFloatingNotes() {
+  const container = document.getElementById('float-notes');
+  if(!container) return;
+  const notes = ['🎵','🎶','🎸','🎹','🎺','🎻','🥁'];
+  for(let i = 0; i < 8; i++) {
+    const n = document.createElement('span');
+    n.textContent = notes[Math.floor(Math.random() * notes.length)];
+    n.style.cssText = `position:absolute;left:${Math.random()*100}%;bottom:-20px;font-size:${Math.random()*1+1}rem;animation:floatNote ${Math.random()*8+6}s linear ${Math.random()*4}s infinite`;
+    container.appendChild(n);
+  }
+}
+ 
+// ===== LOGIN =====
+function switchLoginTab(tab) {
+  document.querySelectorAll('.login-tab').forEach((t,i) => t.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='signup')));
+  document.getElementById('login-form').classList.toggle('active', tab==='login');
+  document.getElementById('signup-form').classList.toggle('active', tab==='signup');
+}
+ 
+function showError(id, show) {
+  const el = document.getElementById(id);
+  if(el) el.classList.toggle('show', show);
+}
+ 
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  let valid = true;
+  
+  if(!/\S+@\S+\.\S+/.test(email)) { showError('login-email-err', true); valid = false; } else showError('login-email-err', false);
+  if(pass.length < 6) { showError('login-pass-err', true); valid = false; } else showError('login-pass-err', false);
+  
+  if(!valid) return;
+  
+  // Get stored users or create default
+  const users = JSON.parse(localStorage.getItem('mm_users') || '[]');
+  const user = users.find(u => u.email === email);
+  
+  if(user && user.pass === pass) {
+    loginSuccess(user);
+  } else if(!user) {
+    // Auto-register for demo
+    const newUser = { email, pass, name: email.split('@')[0], pic: '' };
+    users.push(newUser);
+    localStorage.setItem('mm_users', JSON.stringify(users));
+    loginSuccess(newUser);
+    showToast('Account created automatically!', 'success');
+  } else {
+    showToast('Incorrect password!', 'error');
+    showError('login-pass-err', true);
+    document.getElementById('login-pass-err').textContent = 'Incorrect password';
+  }
+}
+ 
+function handleSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass = document.getElementById('signup-pass').value.trim();
+  const pass2 = document.getElementById('signup-pass2').value.trim();
+  let valid = true;
+  
+  if(!name) { showError('signup-name-err', true); valid = false; } else showError('signup-name-err', false);
+  if(!/\S+@\S+\.\S+/.test(email)) { showError('signup-email-err', true); valid = false; } else showError('signup-email-err', false);
+  if(pass.length < 6) { showError('signup-pass-err', true); valid = false; } else showError('signup-pass-err', false);
+  if(pass !== pass2) { showError('signup-pass2-err', true); valid = false; } else showError('signup-pass2-err', false);
+  
+  if(!valid) return;
+  
+  const users = JSON.parse(localStorage.getItem('mm_users') || '[]');
+  if(users.find(u => u.email === email)) { showToast('Email already exists!', 'error'); return; }
+  
+  const newUser = { email, pass, name, pic: '' };
+  users.push(newUser);
+  localStorage.setItem('mm_users', JSON.stringify(users));
+  showToast('Account created! Welcome ' + name, 'success');
+  loginSuccess(newUser);
+}
+ 
+function socialLogin(provider) {
+  const mockUser = { email: provider.toLowerCase() + '@demo.com', name: provider + ' User', pass: 'demo123', pic: '' };
+  loginSuccess(mockUser);
+  showToast('Signed in with ' + provider + '!', 'success');
+}
+ 
+function loginSuccess(user) {
+  state.user = user;
+  localStorage.setItem('mm_user', JSON.stringify(user));
+  document.getElementById('nav-avatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
+  showSplash(user.name || 'Music Lover');
+}
+ 
+function showForgot() {
+  showToast('Password reset link sent to your email! (Demo)', 'success');
+}
+ 
+// ===== SPLASH =====
+function showSplash(name) {
+  document.getElementById('splash-username-text').textContent = `Welcome back, ${name}! 🎵`;
+  navigateTo('splash', false);
+  document.getElementById('navbar').classList.add('hidden');
+  setTimeout(() => {
+    navigateTo('home');
+    document.getElementById('navbar').classList.remove('hidden');
+  }, 3000);
+}
+ 
+// ===== HOME PAGE =====
+function initHomePage() {
+  loadTrending();
+  loadRecommended();
+  loadRecentMoods();
+}
+ 
+async function loadTrending() {
+  const grid = document.getElementById('trending-grid');
+  try {
+    const res = await fetch(`https://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${LASTFM_KEY}&format=json&limit=6`);
+    if(!res.ok) throw new Error('API error');
+    const data = await res.json();
+    const tracks = data.tracks?.track || [];
+    if(tracks.length > 0) {
+      grid.innerHTML = tracks.map(t => createSongCard({
+        id: t.mbid || Math.random(),
+        title: t.name,
+        artist: t.artist?.name || 'Unknown',
+        emoji: '🎵',
+        tags: ['trending'],
+        img: t.image?.[2]?.['#text'] || ''
+      })).join('');
+      return;
+    }
+  } catch(e) {}
+  // Fallback: random songs
+  const songs = shuffleArray([...state.allSongs]).slice(0, 6);
+  grid.innerHTML = songs.map(s => createSongCard(s)).join('');
+}
+ 
+async function loadRecommended() {
+  const grid = document.getElementById('recommended-grid');
+  const mood = state.currentMood || 'happy';
+  const songs = (FALLBACK_SONGS[mood] || FALLBACK_SONGS.happy).slice(0, 4);
+  
+  try {
+    const tag = MOOD_CONFIG[mood]?.tags[0] || 'pop';
+    const res = await fetch(`https://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag=${encodeURIComponent(tag)}&api_key=${LASTFM_KEY}&format=json&limit=4`);
+    if(!res.ok) throw new Error('API');
+    const data = await res.json();
+    const tracks = data.tracks?.track || [];
+    if(tracks.length > 0) {
+      grid.innerHTML = tracks.map(t => createSongCard({
+        id: t.mbid || Math.random(),
+        title: t.name,
+        artist: t.artist?.name || 'Unknown',
+        emoji: MOOD_CONFIG[mood]?.emoji || '🎵',
+        tags: [mood],
+        img: t.image?.[2]?.['#text'] || ''
+      })).join('');
+      return;
+    }
+  } catch(e) {}
+  
+  grid.innerHTML = songs.map(s => createSongCard(s)).join('');
+}
+ 
+function loadRecentMoods() {
+  const row = document.getElementById('recent-moods-row');
+  if(state.moodHistory.length === 0) {
+    row.innerHTML = '<span class="chip">No moods detected yet</span>';
+    return;
+  }
+  row.innerHTML = state.moodHistory.slice(0,8).map(m => 
+    `<span class="chip" onclick="quickMood('${m.mood}')">${MOOD_CONFIG[m.mood]?.emoji || '🎵'} ${m.mood} <small style="opacity:.6;margin-left:2px">${m.time}</small></span>`
+  ).join('');
+}
+ 
+// ===== SEARCH =====
+const searchSuggestions = ['Happy songs','Sad playlists','Chill vibes','Focus music','Love songs','Workout beats','Top hits 2024','Indie pop','Jazz classics','Lofi hip hop'];
+ 
+function handleSearch(val) {
+  const box = document.getElementById('search-suggestions');
+  if(!val.trim()) { box.classList.remove('open'); return; }
+  const matches = searchSuggestions.filter(s => s.toLowerCase().includes(val.toLowerCase()));
+  const songMatches = state.allSongs.filter(s => 
+    s.title.toLowerCase().includes(val.toLowerCase()) || s.artist.toLowerCase().includes(val.toLowerCase())
+  ).slice(0, 3);
+  
+  if(matches.length === 0 && songMatches.length === 0) { box.classList.remove('open'); return; }
+  
+  box.innerHTML = [
+    ...matches.slice(0,3).map(m => `<div class="suggestion-item" onclick="selectSuggestion('${m}')">🔍 ${m}</div>`),
+    ...songMatches.map(s => `<div class="suggestion-item" onclick="playSong(${JSON.stringify(s).replace(/"/g,'&quot;')})">🎵 ${s.title} — ${s.artist}</div>`)
+  ].join('');
+  box.classList.add('open');
+}
+ 
+function searchKeydown(e) {
+  if(e.key === 'Enter') doSearch();
+  if(e.key === 'Escape') document.getElementById('search-suggestions').classList.remove('open');
+}
+ 
+function doSearch() {
+  const val = document.getElementById('search-input').value.trim();
+  if(!val) return;
+  document.getElementById('search-suggestions').classList.remove('open');
+  
+  // Check if it's a mood keyword
+  const moodKeys = { happy:'happy',sad:'sad',angry:'angry',chill:'relaxed',calm:'relaxed',relax:'relaxed',love:'romantic',focus:'focused',work:'focused',energy:'energetic',dance:'energetic',broken:'heartbroken' };
+  const lower = val.toLowerCase();
+  const moodMatch = Object.keys(moodKeys).find(k => lower.includes(k));
+  if(moodMatch) {
+    selectMood(moodKeys[moodMatch]);
+    navigateTo('mood');
+    return;
+  }
+  
+  // Search in playlist
+  state.filteredSongs = state.allSongs.filter(s => 
+    s.title.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower)
+  );
+  navigateTo('playlist');
+  showToast(`Found ${state.filteredSongs.length} results for "${val}"`, 'success');
+}
+ 
+function selectSuggestion(val) {
+  document.getElementById('search-input').value = val;
+  document.getElementById('search-suggestions').classList.remove('open');
+  doSearch();
+}
+ 
+function quickMood(mood) {
+  selectMood(mood);
+  navigateTo('mood');
+}
+ 
+// ===== MOOD PAGE =====
+function initMoodPage() {
+  // Nothing special on init
+}
+ 
+function selectMood(mood) {
+  state.currentMood = mood;
+  
+  // Update UI
+  document.querySelectorAll('.mood-card').forEach(c => c.classList.toggle('selected', c.dataset.mood === mood));
+  
+  // Change background overlay
+  const overlay = document.getElementById('mood-bg-overlay');
+  overlay.style.background = MOOD_CONFIG[mood]?.bg || 'transparent';
+  overlay.style.opacity = '1';
+  setTimeout(() => overlay.style.opacity = '0', 3000);
+  
+  // Show banner
+  const cfg = MOOD_CONFIG[mood];
+  const banner = document.getElementById('mood-result-banner');
+  document.getElementById('mood-badge').textContent = `${cfg.emoji} ${mood.charAt(0).toUpperCase()+mood.slice(1)}`;
+  document.getElementById('mood-banner-title').textContent = cfg.msg;
+  document.getElementById('mood-banner-desc').textContent = cfg.desc;
+  banner.classList.add('show');
+  
+  // Save to history
+  const entry = { mood, time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) };
+  state.moodHistory.unshift(entry);
+  if(state.moodHistory.length > 20) state.moodHistory.pop();
+  localStorage.setItem('mm_moodHistory', JSON.stringify(state.moodHistory));
+  
+  // Load songs
+  loadMoodSongs(mood);
+  showToast(`🎵 Loading ${mood} playlist...`, 'info');
+}
+ 
+async function loadMoodSongs(mood) {
+  const section = document.getElementById('mood-songs-section');
+  const grid = document.getElementById('mood-songs-grid');
+  const title = document.getElementById('mood-songs-title');
+  
+  section.style.display = 'block';
+  title.textContent = `${MOOD_CONFIG[mood]?.emoji} Songs for ${mood.charAt(0).toUpperCase()+mood.slice(1)} Mood`;
+  
+  // Skeleton
+  grid.innerHTML = Array(6).fill(`<div class="song-card skeleton-card"><div class="skeleton skeleton-thumb"></div><div style="padding:14px"><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div></div></div>`).join('');
+  
+  let songs = [];
+  try {
+    const tag = MOOD_CONFIG[mood]?.tags[0] || mood;
+    const res = await fetch(`https://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag=${encodeURIComponent(tag)}&api_key=${LASTFM_KEY}&format=json&limit=8`);
+    if(res.ok) {
+      const data = await res.json();
+      const tracks = data.tracks?.track || [];
+      if(tracks.length > 0) {
+        songs = tracks.map(t => ({
+          id: t.mbid || Math.random(),
+          title: t.name,
+          artist: t.artist?.name || 'Unknown',
+          emoji: MOOD_CONFIG[mood]?.emoji || '🎵',
+          tags: [mood],
+          img: t.image?.[2]?.['#text'] || ''
+        }));
+      }
+    }
+  } catch(e) {}
+  
+  if(songs.length === 0) songs = FALLBACK_SONGS[mood] || FALLBACK_SONGS.happy;
+  
+  state.currentPlaylist = songs;
+  grid.innerHTML = songs.map(s => createSongCard(s)).join('');
+}
+ 
+function startVoiceRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition) {
+    showToast('Speech recognition not supported in this browser.', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('voice-btn');
+  const result = document.getElementById('voice-result');
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.continuous = false;
+  
+  btn.classList.add('listening');
+  document.getElementById('voice-btn-text').textContent = 'Listening... Speak now';
+  result.textContent = '🎤 Listening...';
+  
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript.toLowerCase();
+    result.textContent = `You said: "${transcript}"`;
+    const detectedMood = detectMoodFromText(transcript);
+    if(detectedMood) {
+      selectMood(detectedMood);
+      showToast(`Mood detected: ${detectedMood}! 🎵`, 'success');
+    } else {
+      showToast('Could not detect mood. Try again!', 'error');
+    }
+    btn.classList.remove('listening');
+    document.getElementById('voice-btn-text').textContent = 'Speak Your Mood';
+  };
+  
+  recognition.onerror = () => {
+    btn.classList.remove('listening');
+    document.getElementById('voice-btn-text').textContent = 'Speak Your Mood';
+    result.textContent = '';
+    showToast('Voice recognition failed. Check microphone.', 'error');
+  };
+  
+  recognition.start();
+}
+ 
+function analyzeMoodText() {
+  const text = document.getElementById('mood-text-input').value.trim();
+  if(!text) { showToast('Please type something first!', 'error'); return; }
+  const mood = detectMoodFromText(text);
+  if(mood) {
+    selectMood(mood);
+    showToast(`Mood detected: ${mood}! 🎵`, 'success');
+  } else {
+    showToast('Could not detect mood from text. Try describing your feelings.', 'error');
+  }
+}
+ 
+function detectMoodFromText(text) {
+  const t = text.toLowerCase();
+  const moodKeywords = {
+    happy: ['happy','joy','joyful','great','amazing','wonderful','excited','glad','cheerful','good','fantastic','love','celebrate','party','fun','laugh'],
+    sad: ['sad','crying','cry','unhappy','depressed','down','low','gloomy','blue','melancholy','upset','miss','lonely','empty','hurt'],
+    angry: ['angry','mad','furious','rage','frustrated','annoyed','irritated','pissed','hate','anger','aggressive'],
+    relaxed: ['relaxed','calm','peaceful','chill','zen','quiet','serene','at ease','comfortable','stress free','easy','gentle'],
+    romantic: ['love','romantic','miss you','crush','dating','relationship','heart','adore','affection','passionate','kiss'],
+    focused: ['focused','studying','work','concentrate','productive','deadline','serious','determined','goal','mindful'],
+    energetic: ['energetic','pumped','motivated','workout','gym','run','dancing','hype','fired up','electric','active'],
+    heartbroken: ['heartbroken','breakup','broke up','left me','miss them','alone again','she left','he left','over','goodbye','ending']
+  };
+  for(const [mood, keys] of Object.entries(moodKeywords)) {
+    if(keys.some(k => t.includes(k))) return mood;
+  }
+  return null;
+}
+ 
+// ===== PLAYLIST PAGE =====
+function initPlaylistPage() {
+  const songs = state.filteredSongs.length > 0 ? state.filteredSongs : state.allSongs;
+  renderPlaylistRows(songs);
+  state.filteredSongs = [];
+}
+ 
+function filterPlaylist(mood, btn) {
+  document.querySelectorAll('.filter-bar .chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  
+  if(mood === 'all') {
+    renderPlaylistRows(state.allSongs);
+  } else {
+    const filtered = state.allSongs.filter(s => s.tags?.includes(mood));
+    if(filtered.length === 0) {
+      // Fetch from API
+      loadMoodSongsForPlaylist(mood);
+    } else {
+      renderPlaylistRows(filtered);
+    }
+  }
+}
+ 
+async function loadMoodSongsForPlaylist(mood) {
+  const list = document.getElementById('playlist-songs-list');
+  list.innerHTML = Array(6).fill(`<div class="playlist-song-row"><div class="skeleton skeleton-line" style="width:100%;height:50px;border-radius:12px"></div></div>`).join('');
+  
+  let songs = FALLBACK_SONGS[mood] || FALLBACK_SONGS.happy;
+  try {
+    const tag = MOOD_CONFIG[mood]?.tags[0] || mood;
+    const res = await fetch(`https://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag=${encodeURIComponent(tag)}&api_key=${LASTFM_KEY}&format=json&limit=12`);
+    if(res.ok) {
+      const data = await res.json();
+      const tracks = data.tracks?.track || [];
+      if(tracks.length > 0) {
+        songs = tracks.map((t,i) => ({
+          id: t.mbid || i,
+          title: t.name,
+          artist: t.artist?.name || 'Unknown',
+          emoji: MOOD_CONFIG[mood]?.emoji || '🎵',
+          tags: [mood],
+          duration: `${Math.floor(Math.random()*3+2)}:${String(Math.floor(Math.random()*59)).padStart(2,'0')}`,
+          img: t.image?.[2]?.['#text'] || ''
+        }));
+      }
+    }
+  } catch(e) {}
+  renderPlaylistRows(songs);
+}
+ 
+function renderPlaylistRows(songs) {
+  const list = document.getElementById('playlist-songs-list');
+  if(songs.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">🎵</div><p>No songs found for this mood.</p></div>`;
+    return;
+  }
+  list.innerHTML = songs.map((s,i) => createSongRow(s, i)).join('');
+}
+ 
+// ===== FAVORITES PAGE =====
+function initFavoritesPage() {
+  if(state.user) {
+    document.getElementById('profile-name').textContent = state.user.name || 'Music Lover';
+    document.getElementById('profile-email-disp').textContent = state.user.email || '';
+    document.getElementById('edit-name-input').value = state.user.name || '';
+    document.getElementById('edit-pic-input').value = state.user.pic || '';
+    
+    const av = document.getElementById('profile-avatar');
+    document.getElementById('nav-avatar').textContent = (state.user.name||'U').charAt(0).toUpperCase();
+    if(state.user.pic) {
+      av.innerHTML = `<img src="${state.user.pic}" alt="Avatar"/>`;
+    } else {
+      av.textContent = (state.user.name||'U').charAt(0).toUpperCase();
+    }
+  }
+  // Stats
+  document.getElementById('stat-fav').textContent = state.favorites.length;
+  document.getElementById('stat-moods').textContent = state.moodHistory.length;
+  document.getElementById('stat-played').textContent = state.playCount;
+  
+  // Mood history
+  const histRow = document.getElementById('mood-history-row');
+  if(state.moodHistory.length === 0) {
+    histRow.innerHTML = `<span style="color:var(--text2);font-size:.85rem">No moods detected yet.</span>`;
+  } else {
+    histRow.innerHTML = state.moodHistory.slice(0,10).map(m =>
+      `<div class="mood-history-item">${MOOD_CONFIG[m.mood]?.emoji || '🎵'} ${m.mood} <span style="color:var(--text2);font-size:.72rem">${m.time}</span></div>`
+    ).join('');
+  }
+  
+  renderFavSongs();
+  renderRecentSongs();
+}
+ 
+function renderFavSongs() {
+  const grid = document.getElementById('fav-songs-grid');
+  if(state.favorites.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">❤️</div><p>No favorites yet. Play songs and save them!</p></div>`;
+    return;
+  }
+  grid.innerHTML = state.favorites.map(s => createSongCard(s, true)).join('');
+}
+ 
+function renderRecentSongs() {
+  const list = document.getElementById('recent-songs-list');
+  if(state.recentSongs.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">🕐</div><p>No recently played songs yet.</p></div>`;
+    return;
+  }
+  list.innerHTML = state.recentSongs.slice(0,15).map((s,i) => createSongRow(s,i)).join('');
+}
+ 
+function switchFavTab(tab, btn) {
+  document.querySelectorAll('.fav-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('fav-songs-panel').style.display = tab === 'songs' ? 'block' : 'none';
+  document.getElementById('fav-recent-panel').style.display = tab === 'recent' ? 'block' : 'none';
+}
+ 
+// ===== PROFILE =====
+function openModal() {
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+function saveProfile() {
+  const name = document.getElementById('edit-name-input').value.trim();
+  const pic = document.getElementById('edit-pic-input').value.trim();
+  if(!name) { showToast('Name cannot be empty!','error'); return; }
+  state.user.name = name;
+  state.user.pic = pic;
+  localStorage.setItem('mm_user', JSON.stringify(state.user));
+  
+  const users = JSON.parse(localStorage.getItem('mm_users') || '[]');
+  const idx = users.findIndex(u => u.email === state.user.email);
+  if(idx > -1) { users[idx] = state.user; localStorage.setItem('mm_users', JSON.stringify(users)); }
+  
+  document.getElementById('profile-name').textContent = name;
+  document.getElementById('nav-avatar').textContent = name.charAt(0).toUpperCase();
+  const av = document.getElementById('profile-avatar');
+  if(pic) {
+    av.innerHTML = `<img src="${pic}" alt="Avatar"/>`;
+  } else {
+    av.textContent = name.charAt(0).toUpperCase();
+  }
+  closeModal();
+  showToast('Profile updated!','success');
+}
+ 
+// ===== SONG CARDS / ROWS =====
+function createSongCard(song, isFav = false) {
+  const saved = state.favorites.some(f => f.title === song.title && f.artist === song.artist);
+  const imgHtml = song.img ? `<img src="${song.img}" alt="${song.title}" onerror="this.style.display='none'"/>` : '';
+  const songStr = JSON.stringify(song).replace(/"/g,'&quot;');
+  return `
+    <div class="song-card" id="card-${song.id}">
+      <div class="song-card-thumb">
+        ${song.emoji || '🎵'}
+        ${imgHtml}
+        <div class="play-overlay" onclick="playSong(${songStr})" style="display:flex;cursor:pointer">▶</div>
+      </div>
+      <div class="song-card-body">
+        <div class="song-card-title">${song.title}</div>
+        <div class="song-card-artist">${song.artist}</div>
+        <div class="song-card-actions">
+          <button class="song-card-btn play" onclick="playSong(${songStr})">▶ Play</button>
+          <button class="song-card-btn fav ${saved ? 'saved' : ''}" id="fav-btn-${song.id}" onclick="toggleFav(${songStr})">
+            ${saved ? '❤️' : '🤍'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+ 
+function createSongRow(song, idx) {
+  const saved = state.favorites.some(f => f.title === song.title && f.artist === song.artist);
+  const liked = song.liked || false;
+  const imgHtml = song.img ? `<img src="${song.img}" alt="" onerror="this.style.display='none'"/>` : '';
+  const songStr = JSON.stringify(song).replace(/"/g,'&quot;');
+  return `
+    <div class="playlist-song-row" ondblclick="playSong(${songStr})">
+      <div class="song-row-num">${idx + 1}</div>
+      <div class="song-row-thumb">
+        ${song.emoji || '🎵'}
+        ${imgHtml}
+      </div>
+      <div class="song-row-info">
+        <div class="song-row-title">${song.title}</div>
+        <div class="song-row-artist">${song.artist}</div>
+      </div>
+      <div class="song-row-duration">${song.duration || '3:30'}</div>
+      <div class="song-row-actions">
+        <button class="icon-btn ${liked ? 'liked' : ''}" title="Like">👍</button>
+        <button class="icon-btn ${saved ? 'liked' : ''}" onclick="toggleFav(${songStr})" title="Favorite">${saved ? '❤️' : '🤍'}</button>
+        <button class="icon-btn" onclick="playSong(${songStr})" title="Play">▶</button>
+      </div>
+    </div>`;
+}
+ 
+// ===== PLAYER =====
+function playSong(song) {
+  state.currentSong = song;
+  state.isPlaying = true;
+  state.playCount++;
+  localStorage.setItem('mm_playCount', state.playCount);
+  
+  // Add to recent
+  state.recentSongs.unshift(song);
+  if(state.recentSongs.length > 30) state.recentSongs.pop();
+  localStorage.setItem('mm_recentSongs', JSON.stringify(state.recentSongs));
+  
+  // Update mini player
+  const player = document.getElementById('mini-player');
+  document.getElementById('mp-title').textContent = song.title;
+  document.getElementById('mp-artist').textContent = song.artist;
+  document.getElementById('mp-play-btn').textContent = '⏸';
+  player.classList.remove('hidden');
+  
+  if(song.img) {
+    document.getElementById('mp-cover').innerHTML = `<img src="${song.img}" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.parentElement.textContent='🎵'"/>`;
+  } else {
+    document.getElementById('mp-cover').textContent = song.emoji || '🎵';
+  }
+  
+  // Animate progress
+  clearInterval(state.progressInterval);
+  state.progressVal = 0;
+  const fill = document.getElementById('mp-progress-fill');
+  fill.style.width = '0%';
+  state.progressInterval = setInterval(() => {
+    state.progressVal += 0.5;
+    fill.style.width = Math.min(state.progressVal, 100) + '%';
+    if(state.progressVal >= 100) { clearInterval(state.progressInterval); nextSong(); }
+  }, 150);
+  
+  showToast(`▶ Now Playing: ${song.title}`, 'success');
+  
+  // Open Deezer search in new tab as actual audio source
+  // (Deezer API needs CORS proxy; opening search as fallback)
+  // window.open(`https://www.deezer.com/search/${encodeURIComponent(song.title + ' ' + song.artist)}`, '_blank');
+}
+ 
+function togglePlay() {
+  state.isPlaying = !state.isPlaying;
+  document.getElementById('mp-play-btn').textContent = state.isPlaying ? '⏸' : '▶';
+  if(state.isPlaying) {
+    // Resume progress
+    state.progressInterval = setInterval(() => {
+      state.progressVal += 0.5;
+      document.getElementById('mp-progress-fill').style.width = Math.min(state.progressVal, 100) + '%';
+      if(state.progressVal >= 100) { clearInterval(state.progressInterval); nextSong(); }
+    }, 150);
+  } else {
+    clearInterval(state.progressInterval);
+  }
+}
+ 
+function nextSong() {
+  if(state.currentPlaylist.length === 0) return;
+  state.currentSongIndex = (state.currentSongIndex + 1) % state.currentPlaylist.length;
+  playSong(state.currentPlaylist[state.currentSongIndex]);
+}
+ 
+function prevSong() {
+  if(state.currentPlaylist.length === 0) return;
+  state.currentSongIndex = (state.currentSongIndex - 1 + state.currentPlaylist.length) % state.currentPlaylist.length;
+  playSong(state.currentPlaylist[state.currentSongIndex]);
+}
+ 
+function closePlayer() {
+  document.getElementById('mini-player').classList.add('hidden');
+  clearInterval(state.progressInterval);
+  state.isPlaying = false;
+  state.currentSong = null;
+}
+ 
+// Progress bar click
+document.getElementById('mp-progress-bar').addEventListener('click', function(e) {
+  const rect = this.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width * 100;
+  state.progressVal = pct;
+  document.getElementById('mp-progress-fill').style.width = pct + '%';
+});
+ 
+// ===== FAVORITES =====
+function toggleFav(song) {
+  const idx = state.favorites.findIndex(f => f.title === song.title && f.artist === song.artist);
+  if(idx > -1) {
+    state.favorites.splice(idx, 1);
+    showToast(`Removed ${song.title} from favorites`, 'info');
+  } else {
+    state.favorites.unshift(song);
+    showToast(`❤️ Added ${song.title} to favorites!`, 'success');
+  }
+  localStorage.setItem('mm_favorites', JSON.stringify(state.favorites));
+  
+  // Update buttons on current page
+  const btn = document.getElementById(`fav-btn-${song.id}`);
+  if(btn) {
+    const saved = idx === -1;
+    btn.classList.toggle('saved', saved);
+    btn.textContent = saved ? '❤️' : '🤍';
+  }
+  
+  if(state.currentPage === 'favorites') {
+    document.getElementById('stat-fav').textContent = state.favorites.length;
+    renderFavSongs();
+  }
+}
+ 
+// ===== FAQ =====
+function toggleFaq(item) {
+  const ans = item.querySelector('.faq-a');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.faq-a').classList.remove('open');
+  });
+  if(!isOpen) { item.classList.add('open'); ans.classList.add('open'); }
+}
+ 
+// ===== CONTACT =====
+function submitContact() {
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const msg = document.getElementById('contact-msg').value.trim();
+  if(!name || !email || !msg) { showToast('Please fill all fields!', 'error'); return; }
+  showToast('Message sent! Thank you for the feedback 💌', 'success');
+  document.getElementById('contact-name').value = '';
+  document.getElementById('contact-email').value = '';
+  document.getElementById('contact-msg').value = '';
+}
+ 
+// ===== ABOUT: UTILS =====
+function shuffleArray(arr) {
+  for(let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+ 
+// ===== CLOSE SUGGESTIONS ON OUTSIDE CLICK =====
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.search-bar')) {
+    document.getElementById('search-suggestions')?.classList.remove('open');
+  }
+  if(!e.target.closest('#edit-modal') && !e.target.closest('.profile-avatar') && !e.target.closest('.edit-name-btn')) {
+    // Don't close on body click as that's too aggressive
+  }
+});
+ 
+// ===== NAV AVATAR =====
+document.getElementById('nav-avatar').addEventListener('click', () => {
+  if(state.user) navigateTo('favorites');
+  else navigateTo('login');
+});
+ 
+// ===== LOGOUT (if user clicks avatar on favorites page) =====
+// Add logout button to profile
+document.addEventListener('DOMContentLoaded', () => {
+  const extra = document.createElement('button');
+  extra.className = 'edit-name-btn';
+  extra.style.cssText = 'background:rgba(244,63,94,0.1);border-color:var(--accent3);color:var(--accent3);margin-left:8px';
+  extra.textContent = '🚪 Logout';
+  extra.onclick = () => {
+    state.user = null;
+    localStorage.removeItem('mm_user');
+    navigateTo('login');
+    showToast('Logged out!', 'info');
+    document.getElementById('navbar').classList.add('hidden');
+  };
+  const nameRow = document.querySelector('.profile-name-row');
+  if(nameRow) nameRow.appendChild(extra);
+});
+ 
+console.log('%c🎵 Mood Melody', 'font-size:20px;color:#7c3aed;font-weight:bold');
+console.log('%cBuilt with HTML, CSS & Vanilla JS | APIs: Last.fm, Deezer, Web Speech', 'color:#06b6d4');
+</script>
+</body>
+</html>
